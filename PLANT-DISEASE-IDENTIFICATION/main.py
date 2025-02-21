@@ -16,7 +16,7 @@ app_mode = st.sidebar.selectbox("Select Page",["HOME","DISEASE RECOGNITION"])
 
 # import Image from pillow to open images
 from PIL import Image
-img = Image.open("images/Diseases.png")
+img = Image.open("Diseases.png")
 
 
 # display image using streamlit
