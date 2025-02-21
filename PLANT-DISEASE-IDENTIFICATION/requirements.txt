@@ -1,10 +1,10 @@
-numpy
-pickle-mixin
+numpy>=1.25
 streamlit
 seaborn
 pandas
 matplotlib
-scikit_learn
+scikit-learn
 tensorflow
 keras
-opencv_python_headless
+opencv-python-headless>=4.5
+setuptools
