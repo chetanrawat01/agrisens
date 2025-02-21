@@ -593,7 +593,7 @@ html {
 .about .box-container {
   display: grid;
   gap: 2rem;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   /* Fixed to 6 columns */
   /* grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); */
   padding-top: 5rem;
