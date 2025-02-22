@@ -73,14 +73,13 @@ def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rai
 
 # ✅ Function to Display Crop Info with Guide Link
 def show_crop_info(crop_name):
-    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.png")
+    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.jpg")
 
     # Layout with two columns
-    col1, col2 = st.columns([1, 2])
+    col1, col2 = st.columns([1.5, 2.5])
 
     with col1:
-        # Show Guidance Info (Left Side)
-        st.success(f"🌿 **{crop_name.capitalize()} Guide**")
+        st.markdown(f"<h3 style='color: green;'>🌿 {crop_name.capitalize()} Guide</h3>", unsafe_allow_html=True)
         st.info(crop_details.get(crop_name, "ℹ Information not available"))
 
         # Link to external guide
@@ -97,11 +96,10 @@ def show_crop_info(crop_name):
 
 # ✅ Streamlit App UI
 def main():
-    st.markdown("<h1 style='text-align: center;'>🌾 SMART CROP RECOMMENDATION 🌾</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: #4CAF50;'>🌾 SMART CROP RECOMMENDATION 🌾</h1>", unsafe_allow_html=True)
     
     # Sidebar Inputs
-    st.sidebar.title("AgriSens - Crop Advisor")
-    st.sidebar.header("Enter Soil & Climate Conditions")
+    st.sidebar.markdown("<h2 style='color: #4CAF50;'>🌱 Enter Soil & Climate Conditions</h2>", unsafe_allow_html=True)
     
     nitrogen = st.sidebar.number_input("Nitrogen (N)", min_value=0.0, max_value=140.0, value=50.0, step=1.0)
     phosphorus = st.sidebar.number_input("Phosphorus (P)", min_value=0.0, max_value=145.0, value=50.0, step=1.0)
@@ -112,9 +110,9 @@ def main():
     rainfall = st.sidebar.number_input("Rainfall (mm)", min_value=0.0, max_value=500.0, value=200.0, step=1.0)
 
     # Predict Button
-    if st.sidebar.button("Predict"):
+    if st.sidebar.button("🌿 Predict Crop"):
         prediction = predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall)
-        st.success(f"🌱 Recommended Crop: **{prediction}**")
+        st.success(f"🌱 Recommended Crop: **{prediction.capitalize()}**")
         show_crop_info(prediction)
 
 # ✅ Run the App
