@@ -3,16 +3,17 @@ import numpy as np
 import pandas as pd
 import os
 import pickle
+import requests
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from PIL import Image
 
-# ✅ Fix: Get the absolute path of the CSV file
+# ✅ Fix: Get absolute paths
 DATA_PATH = os.path.join(os.path.dirname(__file__), "Crop_recommendation.csv")
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "RF.pkl")
 IMAGE_DIR = os.path.join(os.path.dirname(__file__), "crop_images")
 
-# ✅ Check if the dataset exists
+# ✅ Ensure the dataset exists
 if not os.path.exists(DATA_PATH):
     st.error(f"❌ Error: {DATA_PATH} file not found! Please upload the dataset.")
     st.stop()
@@ -36,6 +37,32 @@ else:
     model.fit(X_train, y_train)
     with open(MODEL_PATH, "wb") as f:
         pickle.dump(model, f)
+
+# ✅ List of Crops
+crops = ['rice', 'maize', 'chickpea', 'kidneybeans', 'pigeonpeas',
+         'mothbeans', 'mungbean', 'blackgram', 'lentil', 'pomegranate',
+         'banana', 'mango', 'grapes', 'watermelon', 'muskmelon', 'apple',
+         'orange', 'papaya', 'coconut', 'cotton', 'jute', 'coffee']
+
+# ✅ Function to Download Missing Images
+def download_missing_images():
+    os.makedirs(IMAGE_DIR, exist_ok=True)
+    
+    for crop in crops:
+        image_path = os.path.join(IMAGE_DIR, f"{crop}.jpg")
+        if not os.path.exists(image_path):
+            url = f"https://source.unsplash.com/400x300/?{crop},plant"
+            response = requests.get(url)
+            
+            if response.status_code == 200:
+                with open(image_path, "wb") as file:
+                    file.write(response.content)
+                print(f"✅ Downloaded: {crop}.jpg")
+            else:
+                print(f"❌ Failed to download {crop}.jpg")
+
+# ✅ Download Images (Run only once)
+download_missing_images()
 
 # ✅ Function to Predict Crop
 def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall):
