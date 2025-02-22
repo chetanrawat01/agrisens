@@ -88,7 +88,7 @@ def show_crop_info(crop_name):
 
 # ✅ **Main Function**
 def main():
-    st.markdown("<h1 style='text-align: center; color: #4CAF50;'>🌾 SMART CROP RECOMMENDATION 🌾</h1>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center; color: #4CAF50;'>🌾 SMART CROP RECOMMENDATION 🌾</h2>", unsafe_allow_html=True)
     
     # Sidebar Inputs
     st.sidebar.markdown("<h2 style='color: #4CAF50;'>🌱 Enter Soil & Climate Conditions</h2>", unsafe_allow_html=True)
