@@ -40,6 +40,32 @@ else:
 # ✅ Crop Guide Page Link
 GUIDE_PAGE_URL = "https://chetanrawat01.github.io/agrisens/guide/index.html#"
 
+# ✅ Crop Guidance Data
+crop_details = {
+    "rice": "🌾 Rice needs warm temperatures (20-30°C) and high humidity. Ideal soil: clayey with good water retention.",
+    "maize": "🌽 Maize grows well in warm climates (21-27°C) with well-drained sandy loam soil.",
+    "chickpea": "🌱 Chickpeas prefer cool weather (10-25°C) and well-drained loamy soil with neutral pH.",
+    "kidneybeans": "🫘 Kidney beans thrive in temperatures around 15-25°C and well-drained sandy loam soil.",
+    "pigeonpeas": "🌿 Pigeon peas grow best in tropical climates (18-30°C) with light, well-drained soil.",
+    "mothbeans": "🌱 Moth beans need dry conditions (25-35°C) and sandy soil with low water availability.",
+    "mungbean": "🌱 Mung beans require warm temperatures (25-35°C) and well-drained sandy loam soil.",
+    "blackgram": "🌱 Black gram prefers warm, humid conditions (25-30°C) with well-drained loamy soil.",
+    "lentil": "🌿 Lentils thrive in cool temperatures (10-25°C) and light loamy soil.",
+    "pomegranate": "🍎 Pomegranates prefer hot, dry climates (25-35°C) and loamy soil with good drainage.",
+    "banana": "🍌 Bananas grow best in warm, humid regions (25-30°C) with rich, well-drained soil.",
+    "mango": "🥭 Mango trees require warm climates (25-35°C) and well-drained sandy loam soil.",
+    "grapes": "🍇 Grapes grow well in moderate temperatures (15-30°C) with loamy, well-drained soil.",
+    "watermelon": "🍉 Watermelons need hot, dry climates (25-35°C) with sandy loam soil and good drainage.",
+    "muskmelon": "🍈 Muskmelons prefer warm weather (25-35°C) and sandy loam soil.",
+    "apple": "🍏 Apples grow best in cold regions (5-20°C) with well-drained loamy soil.",
+    "orange": "🍊 Oranges thrive in tropical climates (15-30°C) with well-drained sandy soil.",
+    "papaya": "🍈 Papayas need warm temperatures (25-35°C) and well-drained sandy loam soil.",
+    "coconut": "🥥 Coconuts grow well in humid coastal climates (27-32°C) with sandy loam soil.",
+    "cotton": "🧺 Cotton requires warm temperatures (25-35°C) and light, well-drained soil.",
+    "jute": "🧵 Jute needs hot, humid conditions (24-37°C) with sandy loam soil and high water availability.",
+    "coffee": "☕ Coffee plants grow best in cool, humid climates (15-25°C) with well-drained soil."
+}
+
 # ✅ Function to Predict Crop
 def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall):
     input_data = np.array([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]])
@@ -48,12 +74,16 @@ def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rai
 # ✅ Function to Display Crop Info with Guide Link
 def show_crop_info(crop_name):
     image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.jpg")
-    
+
     # Layout with two columns
     col1, col2 = st.columns([1, 2])
 
     with col1:
+        # Show Guidance Info (Left Side)
         st.success(f"🌿 **{crop_name.capitalize()} Guide**")
+        st.info(crop_details.get(crop_name, "ℹ Information not available"))
+
+        # Link to external guide
         guide_link = f"{GUIDE_PAGE_URL}{crop_name.lower()}"
         st.markdown(f"[📖 Click here for full details on {crop_name.capitalize()}]({guide_link})", unsafe_allow_html=True)
 
