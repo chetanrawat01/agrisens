@@ -37,48 +37,18 @@ else:
     with open(MODEL_PATH, "wb") as f:
         pickle.dump(model, f)
 
-# ✅ Crop Information (Irrigation, Harvest, Price, Selling)
+# ✅ Complete Crop Details
 crop_details = {
-    "rice": {
-        "description": "🌾 Rice needs warm temperatures (20-30°C) and high humidity. Ideal soil: clayey with good water retention.",
-        "irrigation": "Every 5-7 days",
-        "harvest_time": "120-150 days",
-        "price_trend": "Stable with seasonal spikes",
-        "best_selling_time": "Post-monsoon (Oct-Dec)",
-        "selling_methods": "Local markets, government procurement, online platforms"
-    },
-    "maize": {
-        "description": "🌽 Maize grows well in warm climates (21-27°C) with well-drained sandy loam soil.",
-        "irrigation": "Every 7-10 days",
-        "harvest_time": "90-110 days",
-        "price_trend": "Moderate fluctuations",
-        "best_selling_time": "Pre-summer (Feb-Apr)",
-        "selling_methods": "Wholesale markets, direct contracts with food companies"
-    },
-    "wheat": {
-        "description": "🌾 Wheat requires a cool climate (15-22°C) and well-drained loamy soil.",
-        "irrigation": "Every 10-12 days",
-        "harvest_time": "120-150 days",
-        "price_trend": "Generally stable with government price support",
-        "best_selling_time": "Post-harvest (Mar-May)",
-        "selling_methods": "Government mandis, local grain markets, bulk buyers"
-    },
-    "cotton": {
-        "description": "🧺 Cotton requires warm temperatures (25-35°C) and light, well-drained soil.",
-        "irrigation": "Every 15 days",
-        "harvest_time": "160-180 days",
-        "price_trend": "High fluctuations due to international demand",
-        "best_selling_time": "Post-harvest (Sep-Nov)",
-        "selling_methods": "Textile industries, direct mill contracts"
-    },
-    "sugarcane": {
-        "description": "🍬 Sugarcane needs a hot climate (25-38°C) and well-irrigated soil.",
-        "irrigation": "Every 10-12 days",
-        "harvest_time": "10-14 months",
-        "price_trend": "Stable with government control",
-        "best_selling_time": "Year-round (Factory contracts)",
-        "selling_methods": "Sugar mills, ethanol production companies"
-    },
+    "rice": {"description": "🌾 Requires warm temperature and high humidity.", "irrigation": "Every 5-7 days", "harvest_time": "120-150 days", "price_trend": "Stable with seasonal spikes", "best_selling_time": "Post-monsoon (Oct-Dec)", "selling_methods": "Local markets, government procurement, online platforms"},
+    "maize": {"description": "🌽 Grows well in warm climates with well-drained soil.", "irrigation": "Every 7-10 days", "harvest_time": "90-110 days", "price_trend": "Moderate fluctuations", "best_selling_time": "Pre-summer (Feb-Apr)", "selling_methods": "Wholesale markets, food companies"},
+    "chickpea": {"description": "🌱 Prefers cool weather and well-drained loamy soil.", "irrigation": "Every 10-12 days", "harvest_time": "90-120 days", "price_trend": "Stable", "best_selling_time": "Winter (Nov-Feb)", "selling_methods": "Local grain markets, food processors"},
+    "kidneybeans": {"description": "🫘 Thrives in moderate temperature with sandy loam soil.", "irrigation": "Every 8-10 days", "harvest_time": "90-120 days", "price_trend": "Moderate fluctuations", "best_selling_time": "Post-rainy season", "selling_methods": "Local markets, grocery suppliers"},
+    "pigeonpeas": {"description": "🌿 Requires tropical climate with well-drained soil.", "irrigation": "Every 10-15 days", "harvest_time": "150-180 days", "price_trend": "Stable", "best_selling_time": "Post-harvest (Nov-Jan)", "selling_methods": "Grain markets, bulk buyers"},
+    "mothbeans": {"description": "🌱 Grows in dry conditions, needs sandy soil.", "irrigation": "Every 12-15 days", "harvest_time": "70-90 days", "price_trend": "High fluctuations", "best_selling_time": "Winter", "selling_methods": "Local farmers, wholesale traders"},
+    "mungbean": {"description": "🌱 Prefers warm climate and sandy loam soil.", "irrigation": "Every 7-10 days", "harvest_time": "60-90 days", "price_trend": "Moderate", "best_selling_time": "Spring", "selling_methods": "Pulses mills, grain traders"},
+    "blackgram": {"description": "🌱 Grows well in humid climate.", "irrigation": "Every 10-12 days", "harvest_time": "90-110 days", "price_trend": "Stable", "best_selling_time": "Post-monsoon", "selling_methods": "Wholesale grain markets"},
+    "lentil": {"description": "🌿 Thrives in cool temperatures and loamy soil.", "irrigation": "Every 12-15 days", "harvest_time": "100-120 days", "price_trend": "Moderate", "best_selling_time": "Winter", "selling_methods": "Pulses traders"},
+    "coffee": {"description": "☕ Prefers cool, humid climates.", "irrigation": "Every 10 days", "harvest_time": "2-3 years", "price_trend": "High volatility", "best_selling_time": "Winter", "selling_methods": "Coffee exporters"},
 }
 
 # ✅ Function to Predict Crop
@@ -88,16 +58,12 @@ def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rai
 
 # ✅ Function to Display Crop Info
 def show_crop_info(crop_name):
-    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.png")
+    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.jpg")
 
-    # Layout with two columns
     col1, col2 = st.columns([1.5, 2.5])
-
     with col1:
         st.markdown(f"<h3 style='color: green;'>🌿 {crop_name.capitalize()} Guide</h3>", unsafe_allow_html=True)
-        
-        # Fetch crop details
-        details = crop_details.get(crop_name.lower(), None)
+        details = crop_details.get(crop_name.lower(), {})
         if details:
             st.info(details["description"])
             st.markdown(f"**💧 Irrigation:** {details['irrigation']}")
@@ -107,36 +73,18 @@ def show_crop_info(crop_name):
             st.markdown(f"**📦 Selling Methods:** {details['selling_methods']}")
         else:
             st.warning("ℹ No detailed information available for this crop.")
-
     with col2:
-        # Show Image (Right Side)
         if os.path.exists(image_path):
-            img = Image.open(image_path).resize((400, 300))  # Fixed size
-            st.image(img, caption=f"🌿 Recommended Crop: {crop_name}", use_container_width=False)
-        else:
-            st.warning("⚠ No image available for this crop.")
+            st.image(Image.open(image_path).resize((400, 300)), caption=f"🌿 Recommended Crop: {crop_name}")
 
-# ✅ Streamlit App UI
+# ✅ Streamlit UI
 def main():
     st.markdown("<h1 style='text-align: center; color: #4CAF50;'>🌾 SMART CROP RECOMMENDATION 🌾</h1>", unsafe_allow_html=True)
     
-    # Sidebar Inputs
-    st.sidebar.markdown("<h2 style='color: #4CAF50;'>🌱 Enter Soil & Climate Conditions</h2>", unsafe_allow_html=True)
-    
-    nitrogen = st.sidebar.number_input("Nitrogen (N)", min_value=0.0, max_value=140.0, value=50.0, step=1.0)
-    phosphorus = st.sidebar.number_input("Phosphorus (P)", min_value=0.0, max_value=145.0, value=50.0, step=1.0)
-    potassium = st.sidebar.number_input("Potassium (K)", min_value=0.0, max_value=205.0, value=50.0, step=1.0)
-    temperature = st.sidebar.number_input("Temperature (°C)", min_value=0.0, max_value=51.0, value=25.0, step=0.1)
-    humidity = st.sidebar.number_input("Humidity (%)", min_value=0.0, max_value=100.0, value=50.0, step=0.1)
-    ph = st.sidebar.number_input("pH Level", min_value=0.0, max_value=14.0, value=6.5, step=0.1)
-    rainfall = st.sidebar.number_input("Rainfall (mm)", min_value=0.0, max_value=500.0, value=200.0, step=1.0)
-
-    # Predict Button
     if st.sidebar.button("🌿 Predict Crop"):
-        prediction = predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall)
+        prediction = predict_crop(50, 50, 50, 25, 50, 6.5, 200)  # Example Inputs
         st.success(f"🌱 Recommended Crop: **{prediction.capitalize()}**")
         show_crop_info(prediction)
 
-# ✅ Run the App
 if __name__ == '__main__':
     main()
