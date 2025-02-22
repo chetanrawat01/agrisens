@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import os
 import pickle
-import requests
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from PIL import Image
@@ -38,32 +37,6 @@ else:
     with open(MODEL_PATH, "wb") as f:
         pickle.dump(model, f)
 
-# ✅ List of Crops
-crops = ['rice', 'maize', 'chickpea', 'kidneybeans', 'pigeonpeas',
-         'mothbeans', 'mungbean', 'blackgram', 'lentil', 'pomegranate',
-         'banana', 'mango', 'grapes', 'watermelon', 'muskmelon', 'apple',
-         'orange', 'papaya', 'coconut', 'cotton', 'jute', 'coffee']
-
-# ✅ Function to Download Missing Images
-def download_missing_images():
-    os.makedirs(IMAGE_DIR, exist_ok=True)
-    
-    for crop in crops:
-        image_path = os.path.join(IMAGE_DIR, f"{crop}.jpg")
-        if not os.path.exists(image_path):
-            url = f"https://source.unsplash.com/400x300/?{crop},plant"
-            response = requests.get(url)
-            
-            if response.status_code == 200:
-                with open(image_path, "wb") as file:
-                    file.write(response.content)
-                print(f"✅ Downloaded: {crop}.jpg")
-            else:
-                print(f"❌ Failed to download {crop}.jpg")
-
-# ✅ Download Images (Run only once)
-download_missing_images()
-
 # ✅ Function to Predict Crop
 def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall):
     input_data = np.array([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]])
@@ -71,7 +44,7 @@ def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rai
 
 # ✅ Function to Display Crop Image
 def show_crop_image(crop_name):
-    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.png")
+    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.jpg")
     if os.path.exists(image_path):
         st.image(image_path, caption=f"🌿 Recommended Crop: {crop_name}", use_column_width=True)
     else:
