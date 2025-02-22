@@ -68,20 +68,30 @@ def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rai
     input_data = np.array([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]])
     return model.predict(input_data)[0]
 
-# ✅ Function to Display Crop Image & Details
+# ✅ Function to Display Crop Image & Details in Two Columns
 def show_crop_info(crop_name):
-    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.png")
-    
-    # Show Image
-    if os.path.exists(image_path):
-        img = Image.open(image_path).resize((400, 300))  # Fixed size
-        st.image(img, caption=f"🌿 Recommended Crop: {crop_name}", use_container_width=False)
-    else:
-        st.warning("⚠ No image available for this crop.")
-    
-    # Show Crop Details
-    if crop_name in crop_details:
-        st.info(crop_details[crop_name])
+    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.jpg")
+
+    # Layout with two columns
+    col1, col2 = st.columns([1, 2])
+
+    with col1:
+        # Show Guidance Info (Left Side)
+        if crop_name in crop_details:
+            st.success(f"🌿 **{crop_name.capitalize()} Guide**")
+            st.info(crop_details[crop_name])
+
+    with col2:
+        # Show Image (Right Side)
+        if os.path.exists(image_path):
+            img = Image.open(image_path).resize((400, 300))  # Fixed size
+            st.image(img, caption=f"🌿 Recommended Crop: {crop_name}", use_container_width=False)
+        else:
+            st.warning("⚠ No image available for this crop.")
+
+    # Additional Detailed Section Below
+    st.subheader(f"📌 More About {crop_name.capitalize()}")
+    st.write("For further details on growing conditions, pests, and harvesting techniques, visit our **[Crop Guide](index.html)**.")
 
 # ✅ Streamlit App UI
 def main():
