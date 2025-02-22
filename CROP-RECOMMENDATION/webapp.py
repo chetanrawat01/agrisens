@@ -70,7 +70,7 @@ def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rai
 
 # ✅ Function to Display Crop Image & Details in Two Columns
 def show_crop_info(crop_name):
-    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.jpg")
+    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.png")
 
     # Layout with two columns
     col1, col2 = st.columns([1, 2])
@@ -91,7 +91,7 @@ def show_crop_info(crop_name):
 
     # Additional Detailed Section Below
     st.subheader(f"📌 More About {crop_name.capitalize()}")
-    st.write("For further details on growing conditions, pests, and harvesting techniques, visit our **[Crop Guide](index.html)**.")
+    st.write("For further details on growing conditions, pests, and harvesting techniques, visit our **[Crop Guide](guide/index.html)**.")
 
 # ✅ Streamlit App UI
 def main():
