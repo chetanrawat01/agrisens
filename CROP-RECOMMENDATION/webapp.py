@@ -88,7 +88,7 @@ def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rai
 
 # ✅ Function to Display Crop Info
 def show_crop_info(crop_name):
-    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.jpg")
+    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.png")
 
     # Layout with two columns
     col1, col2 = st.columns([1.5, 2.5])
