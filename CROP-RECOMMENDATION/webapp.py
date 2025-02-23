@@ -87,26 +87,41 @@ def show_crop_info(crop_name):
         if os.path.exists(image_path):
             st.image(Image.open(image_path).resize((400, 300)), caption=f"🌿 Recommended Crop: {crop_name}")
 
-# ✅ **Main Function**
+# ✅ Function to Predict Crop with Input Validation
+def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall):
+    input_data = np.array([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]])
+
+    # ✅ Prevent Prediction if All Inputs Are Zero
+    if np.all(input_data == 0):
+        return "Invalid Input"  # Returning a custom error message
+
+    return model.predict(input_data)[0]
+
+# ✅ Update Main Function to Handle Invalid Inputs
 def main():
     st.markdown("<h2 style='text-align: center; color: #4CAF50;'>🌾 SMART CROP RECOMMENDATION 🌾</h2>", unsafe_allow_html=True)
-    
+
     # Sidebar Inputs
     st.sidebar.markdown("<h2 style='color: #4CAF50;'>🌱 Enter Soil & Climate Conditions</h2>", unsafe_allow_html=True)
-    
-    nitrogen = st.sidebar.number_input("Nitrogen (N)", min_value=0.0, max_value=140.0, value=00.0, step=1.0)
-    phosphorus = st.sidebar.number_input("Phosphorus (P)", min_value=0.0, max_value=145.0, value=00.0, step=1.0)
-    potassium = st.sidebar.number_input("Potassium (K)", min_value=0.0, max_value=205.0, value=00.0, step=1.0)
-    temperature = st.sidebar.number_input("Temperature (°C)", min_value=0.0, max_value=51.0, value=00.0, step=0.1)
-    humidity = st.sidebar.number_input("Humidity (%)", min_value=0.0, max_value=100.0, value=00.0, step=0.1)
-    ph = st.sidebar.number_input("pH Level", min_value=0.0, max_value=14.0, value=00.0, step=0.1)
-    rainfall = st.sidebar.number_input("Rainfall (mm)", min_value=0.0, max_value=500.0, value=00.0, step=1.0)
+
+    nitrogen = st.sidebar.number_input("Nitrogen (N)", min_value=0.0, max_value=140.0, value=0.0, step=1.0)
+    phosphorus = st.sidebar.number_input("Phosphorus (P)", min_value=0.0, max_value=145.0, value=0.0, step=1.0)
+    potassium = st.sidebar.number_input("Potassium (K)", min_value=0.0, max_value=205.0, value=0.0, step=1.0)
+    temperature = st.sidebar.number_input("Temperature (°C)", min_value=0.0, max_value=51.0, value=0.0, step=0.1)
+    humidity = st.sidebar.number_input("Humidity (%)", min_value=0.0, max_value=100.0, value=0.0, step=0.1)
+    ph = st.sidebar.number_input("pH Level", min_value=0.0, max_value=14.0, value=0.0, step=0.1)
+    rainfall = st.sidebar.number_input("Rainfall (mm)", min_value=0.0, max_value=500.0, value=0.0, step=1.0)
 
     # Predict Button
     if st.sidebar.button("🌿 Predict Crop"):
         prediction = predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall)
-        st.success(f"🌱 Recommended Crop: **{prediction.capitalize()}**")
-        show_crop_info(prediction)
+        
+        # ✅ Show Error Message If Input Was Invalid
+        if prediction == "Invalid Input":
+            st.error("❌ Please enter valid values before predicting.")
+        else:
+            st.success(f"🌱 Recommended Crop: **{prediction.capitalize()}**")
+            show_crop_info(prediction)
 
 # ✅ Run the App
 if __name__ == '__main__':
