@@ -58,7 +58,7 @@ crop_details = {
     "muskmelon": {"description": "🍈 Prefers warm weather and sandy loam soil.", "irrigation": "Every 3-4 days", "harvest_time": "75-90 days", "price_trend": "High during peak season", "best_selling_time": "Summer", "selling_methods": "Fruit traders, bulk suppliers"},
     "apple": {"description": "🍏 Grows best in cold regions.", "irrigation": "Every 10-12 days", "harvest_time": "150-180 days", "price_trend": "Seasonal high", "best_selling_time": "Winter", "selling_methods": "Fruit mandis, export traders"},
     "coconut": {"description": "🥥 Grows well in humid coastal climates.", "irrigation": "Every 15-20 days", "harvest_time": "180-240 days", "price_trend": "Stable", "best_selling_time": "Year-round", "selling_methods": "Oil mills, local markets"},
-     "jute": {"description": "🧵 Jute is a natural fiber crop grown in hot, humid climates. It requires high rainfall and well-drained sandy loam soil.", "irrigation": "Every 7-10 days", "harvest_time": "120-150 days", "price_trend": "Moderate fluctuations based on global demand", "best_selling_time": "Post-monsoon (Sep-Nov)", "selling_methods": "Textile industries, fiber markets, export companies"},
+    "jute": {"description": "🧵 Jute is a natural fiber crop grown in hot, humid climates. It requires high rainfall and well-drained sandy loam soil.", "irrigation": "Every 7-10 days", "harvest_time": "120-150 days", "price_trend": "Moderate fluctuations based on global demand", "best_selling_time": "Post-monsoon (Sep-Nov)", "selling_methods": "Textile industries, fiber markets, export companies"},
 }
 
 # ✅ Function to Predict Crop
