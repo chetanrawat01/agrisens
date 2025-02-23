@@ -104,13 +104,13 @@ def main():
     # Sidebar Inputs
     st.sidebar.markdown("<h2 style='color: #4CAF50;'>🌱 Enter Soil & Climate Conditions</h2>", unsafe_allow_html=True)
 
-    nitrogen = st.sidebar.number_input("Nitrogen (N)", min_value=0.1, max_value=140.0, value=0.0, step=1.0)
-    phosphorus = st.sidebar.number_input("Phosphorus (P)", min_value=0.1, max_value=145.0, value=0.0, step=1.0)
-    potassium = st.sidebar.number_input("Potassium (K)", min_value=0.1, max_value=205.0, value=0.0, step=1.0)
-    temperature = st.sidebar.number_input("Temperature (°C)", min_value=0.1, max_value=51.0, value=0.0, step=0.1)
-    humidity = st.sidebar.number_input("Humidity (%)", min_value=0.1, max_value=100.0, value=0.0, step=0.1)
-    ph = st.sidebar.number_input("pH Level", min_value=0.1, max_value=51.0, value=0.0, step=0.1)
-    rainfall = st.sidebar.number_input("Rainfall (mm)", min_value=0.1, max_value=500.0, value=0.0, step=1.0)
+    nitrogen = st.sidebar.number_input("Nitrogen (N)", min_value=0.0, max_value=140.0, value=0.0, step=1.0)
+    phosphorus = st.sidebar.number_input("Phosphorus (P)", min_value=0.0, max_value=145.0, value=0.0, step=1.0)
+    potassium = st.sidebar.number_input("Potassium (K)", min_value=0.0, max_value=205.0, value=0.0, step=1.0)
+    temperature = st.sidebar.number_input("Temperature (°C)", min_value=0.0, max_value=51.0, value=0.0, step=0.1)
+    humidity = st.sidebar.number_input("Humidity (%)", min_value=0.0, max_value=100.0, value=0.0, step=0.1)
+    ph = st.sidebar.number_input("pH Level", min_value=0.0, max_value=51.0, value=0.0, step=0.1)
+    rainfall = st.sidebar.number_input("Rainfall (mm)", min_value=0.0, max_value=500.0, value=0.0, step=1.0)
 
     # Predict Button
     if st.sidebar.button("🌿 Predict Crop"):
