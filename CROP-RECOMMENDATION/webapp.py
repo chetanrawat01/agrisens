@@ -109,7 +109,7 @@ def main():
     potassium = st.sidebar.number_input("Potassium (K)", min_value=0.1, max_value=205.0, value=1.0, step=1.0)
     temperature = st.sidebar.number_input("Temperature (°C)", min_value=0.1, max_value=51.0, value=1.0, step=0.1)
     humidity = st.sidebar.number_input("Humidity (%)", min_value=0.1, max_value=100.0, value=1.0, step=0.1)
-    ph = st.sidebar.number_input("pH Level", min_value=0.1, max_value=14.0, value=6.5, step=0.1)
+    ph = st.sidebar.number_input("pH Level", min_value=0.1, max_value=51.0, value=6.5, step=0.1)
     rainfall = st.sidebar.number_input("Rainfall (mm)", min_value=0.1, max_value=500.0, value=1.0, step=1.0)
 
     # Predict Button
