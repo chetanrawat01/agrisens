@@ -87,13 +87,15 @@ def show_crop_info(crop_name):
         if os.path.exists(image_path):
             st.image(Image.open(image_path).resize((400, 300)), caption=f"🌿 Recommended Crop: {crop_name}")
 
-# ✅ Function to Predict Crop with Input Validation
+# ✅ Function to Predict Crop with Improved Validation
 def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall):
     input_data = np.array([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]])
 
-    # ✅ Prevent Prediction if All Inputs Are Zero
-    if np.all(input_data == 0):
-        return "Invalid Input"  # Returning a custom error message
+    # ✅ Prevent Prediction If Most Inputs Are Zero
+    non_zero_count = np.count_nonzero(input_data)
+    
+    if non_zero_count < 4:  # At least 4 parameters should be non-zero
+        return "Invalid Input"
 
     return model.predict(input_data)[0]
 
@@ -118,7 +120,7 @@ def main():
         
         # ✅ Show Error Message If Input Was Invalid
         if prediction == "Invalid Input":
-            st.error("❌ Please enter valid values before predicting.")
+            st.error("❌ Please enter at least 4 valid values before predicting.")
         else:
             st.success(f"🌱 Recommended Crop: **{prediction.capitalize()}**")
             show_crop_info(prediction)
