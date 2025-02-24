@@ -71,13 +71,6 @@ def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rai
 def show_crop_info(crop_name):
     image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.png")
 
-    st.write(f"🔍 Looking for image at: {image_path}")  # Debugging
-
-    if os.path.exists(image_path):
-        st.image(Image.open(image_path), caption=f"🌿 Recommended Crop: {crop_name}")
-    else:
-        st.warning(f"⚠ Image not found for {crop_name} at {image_path}")
-
 
     col1, col2 = st.columns([1.5, 2.5])
     with col1:
