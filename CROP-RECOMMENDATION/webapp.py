@@ -6,6 +6,8 @@ import pickle
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from PIL import Image
+import os
+st.write("📂 Available images:", os.listdir(IMAGE_DIR))
 
 # ✅ Fix: Get absolute paths
 DATA_PATH = os.path.join(os.path.dirname(__file__), "Crop_recommendation.csv")
