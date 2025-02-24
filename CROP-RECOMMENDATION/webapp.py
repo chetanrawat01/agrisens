@@ -1,101 +1,128 @@
-## Importing necessary libraries for the web app
 import streamlit as st
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-import pickle
 import os
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.metrics import classification_report
-from sklearn import metrics
-from sklearn import tree
-from sklearn.metrics import accuracy_score
-import warnings
-warnings.filterwarnings('ignore')
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-
-# Display Images
-# import Image from pillow to open images
-from PIL import Image
-img = Image.open("crop.png")
-# display image using streamlit
-# width is used to set the width of an image
-st.image(img)
-
-df= pd.read_csv('Crop_recommendation.csv')
-
-#features = df[['temperature', 'humidity', 'ph', 'rainfall']]
-X = df[['N', 'P','K','temperature', 'humidity', 'ph', 'rainfall']]
-y = df['label']
-labels = df['label']
-
-# Split the data into training and testing sets
-Xtrain, Xtest, Ytrain, Ytest = train_test_split(X, y, test_size=0.3, random_state=42)
-RF = RandomForestClassifier(n_estimators=20, random_state=5)
-RF.fit(Xtrain,Ytrain)
-predicted_values = RF.predict(Xtest)
-x = metrics.accuracy_score(Ytest, predicted_values)
-
-
-# Function to load and display an image of the predicted crop
-def show_crop_image(crop_name):
-    # Assuming we have a directory named 'crop_images' with images named as 'crop_name.jpg'
-    image_path = os.path.join('crop_images', crop_name.lower()+'.jpg')
-    if os.path.exists(image_path):
-        st.image(image_path, caption=f"Recommended crop: {crop_name}", use_column_width=True)
-    else:
-        st.error("Image not found for the predicted crop.")
-
-
 import pickle
-# Dump the trained Naive Bayes classifier with Pickle
-RF_pkl_filename = 'RF.pkl'
-# Open the file to save as pkl file
-RF_Model_pkl = open(RF_pkl_filename, 'wb')
-pickle.dump(RF, RF_Model_pkl)
-# Close the pickle instances
-RF_Model_pkl.close()
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from PIL import Image
 
+# ✅ Fix: Get absolute paths
+DATA_PATH = os.path.join(os.path.dirname(__file__), "Crop_recommendation.csv")
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "RF.pkl")
+IMAGE_DIR = os.path.join(os.path.dirname(__file__), "crop_images")
 
-#model = pickle.load(open('RF.pkl', 'rb'))
-RF_Model_pkl=pickle.load(open('RF.pkl','rb'))
+# ✅ Ensure the dataset exists
+if not os.path.exists(DATA_PATH):
+    st.error(f"❌ Error: {DATA_PATH} file not found! Please upload the dataset.")
+    st.stop()
 
-## Function to make predictions
+# ✅ Load dataset
+df = pd.read_csv(DATA_PATH)
+
+# Define features and labels
+X = df[['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']]
+y = df['label']
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# ✅ Load or Train Model
+if os.path.exists(MODEL_PATH):
+    with open(MODEL_PATH, "rb") as f:
+        model = pickle.load(f)
+else:
+    model = RandomForestClassifier(n_estimators=20, random_state=5)
+    model.fit(X_train, y_train)
+    with open(MODEL_PATH, "wb") as f:
+        pickle.dump(model, f)
+
+# ✅ Complete Crop Details
+crop_details = {
+    "banana": {"description": "🍌 Requires warm and humid regions.", "irrigation": "Weekly", "harvest_time": "10-12 months", "price_trend": "Stable", "best_selling_time": "Year-round", "selling_methods": "Fruit traders, local markets"},
+    "rice": {"description": "🌾 Requires warm temperature and high humidity.", "irrigation": "Every 5-7 days", "harvest_time": "120-150 days", "price_trend": "Stable with seasonal spikes", "best_selling_time": "Post-monsoon (Oct-Dec)", "selling_methods": "Local markets, government procurement, online platforms"},
+    "maize": {"description": "🌽 Grows well in warm climates with well-drained soil.", "irrigation": "Every 7-10 days", "harvest_time": "90-110 days", "price_trend": "Moderate fluctuations", "best_selling_time": "Pre-summer (Feb-Apr)", "selling_methods": "Wholesale markets, food companies"},
+    "chickpea": {"description": "🌱 Prefers cool weather and well-drained loamy soil.", "irrigation": "Every 10-12 days", "harvest_time": "90-120 days", "price_trend": "Stable", "best_selling_time": "Winter (Nov-Feb)", "selling_methods": "Local grain markets, food processors"},
+    "kidneybeans": {"description": "🫘 Thrives in moderate temperature with sandy loam soil.", "irrigation": "Every 8-10 days", "harvest_time": "90-120 days", "price_trend": "Moderate fluctuations", "best_selling_time": "Post-rainy season", "selling_methods": "Local markets, grocery suppliers"},
+    "pigeonpeas": {"description": "🌿 Requires tropical climate with well-drained soil.", "irrigation": "Every 10-15 days", "harvest_time": "150-180 days", "price_trend": "Stable", "best_selling_time": "Post-harvest (Nov-Jan)", "selling_methods": "Grain markets, bulk buyers"},
+    "mothbeans": {"description": "🌱 Grows in dry conditions, needs sandy soil.", "irrigation": "Every 12-15 days", "harvest_time": "70-90 days", "price_trend": "High fluctuations", "best_selling_time": "Winter", "selling_methods": "Local farmers, wholesale traders"},
+    "mungbean": {"description": "🌱 Prefers warm climate and sandy loam soil.", "irrigation": "Every 7-10 days", "harvest_time": "60-90 days", "price_trend": "Moderate", "best_selling_time": "Spring", "selling_methods": "Pulses mills, grain traders"},
+    "blackgram": {"description": "🌱 Grows well in humid climate.", "irrigation": "Every 10-12 days", "harvest_time": "90-110 days", "price_trend": "Stable", "best_selling_time": "Post-monsoon", "selling_methods": "Wholesale grain markets"},
+    "lentil": {"description": "🌿 Thrives in cool temperatures and loamy soil.", "irrigation": "Every 12-15 days", "harvest_time": "100-120 days", "price_trend": "Moderate", "best_selling_time": "Winter", "selling_methods": "Pulses traders"},
+    "coffee": {"description": "☕ Prefers cool, humid climates.", "irrigation": "Every 10 days", "harvest_time": "2-3 years", "price_trend": "High volatility", "best_selling_time": "Winter", "selling_methods": "Coffee exporters"},
+    "orange": {"description": "🍊 Thrives in tropical climates.", "irrigation": "Every 12-15 days", "harvest_time": "180-210 days", "price_trend": "Moderate fluctuations", "best_selling_time": "Winter", "selling_methods": "Fruit mandis, supermarkets"},
+    "papaya": {"description": "🍈 Needs warm temperature and well-drained soil.", "irrigation": "Every 10-12 days", "harvest_time": "150-180 days", "price_trend": "High demand year-round", "best_selling_time": "All seasons", "selling_methods": "Local markets, fruit stores"},
+    "mango": {"description": "🥭 Requires warm climate.", "irrigation": "Every 15 days", "harvest_time": "4-5 years", "price_trend": "Seasonal spike", "best_selling_time": "Summer", "selling_methods": "Fruit mandis, online stores"},
+    "grapes": {"description": "🍇 Prefers moderate temperatures.", "irrigation": "Every 7-10 days", "harvest_time": "150-180 days", "price_trend": "High fluctuations", "best_selling_time": "Spring", "selling_methods": "Wine industry, export markets"},
+    "watermelon": {"description": "🍉 Needs hot, dry climate and sandy soil.", "irrigation": "Every 4-5 days", "harvest_time": "80-100 days", "price_trend": "High in summer", "best_selling_time": "Summer", "selling_methods": "Fruit markets, supermarkets"},
+    "muskmelon": {"description": "🍈 Prefers warm weather and sandy loam soil.", "irrigation": "Every 3-4 days", "harvest_time": "75-90 days", "price_trend": "High during peak season", "best_selling_time": "Summer", "selling_methods": "Fruit traders, bulk suppliers"},
+    "apple": {"description": "🍏 Grows best in cold regions.", "irrigation": "Every 10-12 days", "harvest_time": "150-180 days", "price_trend": "Seasonal high", "best_selling_time": "Winter", "selling_methods": "Fruit mandis, export traders"},
+    "coconut": {"description": "🥥 Grows well in humid coastal climates.", "irrigation": "Every 15-20 days", "harvest_time": "180-240 days", "price_trend": "Stable", "best_selling_time": "Year-round", "selling_methods": "Oil mills, local markets"},
+    "jute": {"description": "🧵 Jute is a natural fiber crop grown in hot, humid climates. It requires high rainfall and well-drained sandy loam soil.", "irrigation": "Every 7-10 days", "harvest_time": "120-150 days", "price_trend": "Moderate fluctuations based on global demand", "best_selling_time": "Post-monsoon (Sep-Nov)", "selling_methods": "Textile industries, fiber markets, export companies"},
+}
+
+# ✅ Function to Predict Crop
 def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall):
-    # # Making predictions using the model
-    prediction = RF_Model_pkl.predict(np.array([nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]).reshape(1, -1))
-    return prediction
+    input_data = np.array([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]])
+    return model.predict(input_data)[0]
 
-## Streamlit code for the web app interface
-def main():  
-    # # Setting the title of the web app
-    st.markdown("<h1 style='text-align: center;'>SMART CROP RECOMMENDATIONS", unsafe_allow_html=True)
-    
-    st.sidebar.title("AgriSens")
-    # # Input fields for the user to enter the environmental factors
-    st.sidebar.header("Enter Crop Details")
-    nitrogen = st.sidebar.number_input("Nitrogen", min_value=0.0, max_value=140.0, value=0.0, step=0.1)
-    phosphorus = st.sidebar.number_input("Phosphorus", min_value=0.0, max_value=145.0, value=0.0, step=0.1)
-    potassium = st.sidebar.number_input("Potassium", min_value=0.0, max_value=205.0, value=0.0, step=0.1)
+# ✅ Function to Display Crop Info
+def show_crop_info(crop_name):
+    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.png")
+
+    col1, col2 = st.columns([1.5, 2.5])
+    with col1:
+        st.markdown(f"<h3 style='color: green;'>🌿 {crop_name.capitalize()} Guide</h3>", unsafe_allow_html=True)
+        details = crop_details.get(crop_name.lower(), {})
+        if details:
+            st.info(details["description"])
+            st.markdown(f"**💧 Irrigation:** {details['irrigation']}")
+            st.markdown(f"**⏳ Harvest Time:** {details['harvest_time']}")
+            st.markdown(f"**📉 Market Price Trends:** {details['price_trend']}")
+            st.markdown(f"**🛒 Best Time to Sell:** {details['best_selling_time']}")
+            st.markdown(f"**📦 Selling Methods:** {details['selling_methods']}")
+        else:
+            st.warning("ℹ No detailed information available for this crop.")
+    with col2:
+        if os.path.exists(image_path):
+            st.image(Image.open(image_path).resize((400, 300)), caption=f"🌿 Recommended Crop: {crop_name}")
+
+# ✅ Function to Predict Crop with Strict Validation
+def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall):
+    input_data = np.array([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]])
+
+    # ✅ Prevent Prediction If Any Input (Except pH) Is Zero
+    if np.any(input_data[:, :6] == 0):  # Checking first 6 parameters (excluding pH)
+        return "Invalid Input"
+
+    return model.predict(input_data)[0]
+
+# ✅ Update Main Function to Handle Invalid Inputs
+def main():
+    st.markdown("<h2 style='text-align: center; color: #4CAF50;'>🌾 SMART CROP RECOMMENDATION 🌾</h2>", unsafe_allow_html=True)
+
+    # Sidebar Inputs
+    st.sidebar.markdown("<h2 style='color: #4CAF50;'>🌱 Enter Soil & Climate Conditions</h2>", unsafe_allow_html=True)
+
+    nitrogen = st.sidebar.number_input("Nitrogen (N)", min_value=0.0, max_value=140.0, value=0.0, step=1.0)
+    phosphorus = st.sidebar.number_input("Phosphorus (P)", min_value=0.0, max_value=145.0, value=0.0, step=1.0)
+    potassium = st.sidebar.number_input("Potassium (K)", min_value=0.0, max_value=205.0, value=0.0, step=1.0)
     temperature = st.sidebar.number_input("Temperature (°C)", min_value=0.0, max_value=51.0, value=0.0, step=0.1)
     humidity = st.sidebar.number_input("Humidity (%)", min_value=0.0, max_value=100.0, value=0.0, step=0.1)
-    ph = st.sidebar.number_input("pH Level", min_value=0.0, max_value=14.0, value=0.0, step=0.1)
-    rainfall = st.sidebar.number_input("Rainfall (mm)", min_value=0.0, max_value=500.0, value=0.0, step=0.1)
-    inputs=[[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]]                                               
-   
-    # # Validate inputs and make prediction
-    inputs = np.array([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]])
-    if st.sidebar.button("Predict"):
-        if not inputs.any() or np.isnan(inputs).any() or (inputs == 0).all():
-            st.error("Please fill in all input fields with valid values before predicting.")
+    ph = st.sidebar.number_input("pH Level", min_value=0.0, max_value=9.0, value=0.0, step=0.1)
+    rainfall = st.sidebar.number_input("Rainfall (mm)", min_value=0.0, max_value=500.0, value=0.0, step=1.0)
+
+    # Predict Button
+    if st.sidebar.button("🌿 Predict Crop"):
+        prediction = predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall)
+        
+        # ✅ Show Error Message If Input Was Invalid
+        if prediction == "Invalid Input":
+            st.error("❌ Please enter valid values for all parameters before predicting.")
         else:
-            prediction = predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall)
-            st.success(f"The recommended crop is: {prediction[0]}")
+            st.success(f"🌱 Recommended Crop: **{prediction.capitalize()}**")
+            show_crop_info(prediction)
 
-
-## Running the main function
+# ✅ Run the App
 if __name__ == '__main__':
     main()
-
