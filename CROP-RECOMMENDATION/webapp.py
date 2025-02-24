@@ -10,17 +10,7 @@ from PIL import Image
 # ✅ Fix: Get absolute paths
 DATA_PATH = os.path.join(os.path.dirname(__file__), "Crop_recommendation.csv")
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "RF.pkl")
-import os
-import streamlit as st
-
-# ✅ Define IMAGE_DIR before using it
 IMAGE_DIR = os.path.join(os.path.dirname(__file__), "crop_images")
-
-# ✅ Check if directory exists before listing files
-if os.path.exists(IMAGE_DIR):
-    st.write("📂 Available images:", os.listdir(IMAGE_DIR))
-else:
-    st.error(f"❌ Error: The folder {IMAGE_DIR} does not exist!")
 
 # ✅ Ensure the dataset exists
 if not os.path.exists(DATA_PATH):
