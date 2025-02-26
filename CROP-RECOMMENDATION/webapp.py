@@ -3,42 +3,25 @@ import numpy as np
 import pandas as pd
 import os
 import pickle
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
 from PIL import Image
 
-# ✅ Fix: Get absolute paths
-DATA_PATH = os.path.join(os.path.dirname(__file__), "Crop_recommendation.csv")
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "AgriSens\RF.pkl")
-ENCODER_PATH = os.path.join(os.path.dirname(__file__), "AgriSens\label_encoder.pkl")
-IMAGE_DIR = os.path.join(os.path.dirname(__file__), "crop_images")
+# ✅ Define Paths
+BASE_DIR = os.path.dirname(__file__)  # Get the base directory
+IMAGE_DIR = os.path.join(BASE_DIR, "CROP-RECOMMENDATION", "crop_images")  # ✅ Updated path
+MODEL_PATH = os.path.join(BASE_DIR, "RF.pkl")
+ENCODER_PATH = os.path.join(BASE_DIR, "label_encoder.pkl")
 
-# ✅ Ensure the dataset exists
-if not os.path.exists(DATA_PATH):
-    st.error(f"❌ Error: {DATA_PATH} file not found! Please upload the dataset.")
-    st.stop()
-
-# ✅ Load dataset
-df = pd.read_csv(DATA_PATH)
-
-# Define features and labels
-X = df[['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']]
-y = df['label']
-
-# Train-test split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-
-# ✅ Load or Train Model
-if os.path.exists(MODEL_PATH):
+# ✅ Load Model & Label Encoder
+if os.path.exists(MODEL_PATH) and os.path.exists(ENCODER_PATH):
     with open(MODEL_PATH, "rb") as f:
         model = pickle.load(f)
+    with open(ENCODER_PATH, "rb") as f:
+        label_encoder = pickle.load(f)
 else:
-    model = RandomForestClassifier(n_estimators=20, random_state=5)
-    model.fit(X_train, y_train)
-    with open(MODEL_PATH, "wb") as f:
-        pickle.dump(model, f)
+    st.error("❌ Model or Label Encoder not found! Please train the model first.")
+    st.stop()
 
-# ✅ Complete Crop Details
+# ✅ Crop Information
 crop_details = {
     "banana": {"description": "🍌 Requires warm and humid regions.", "irrigation": "Weekly", "harvest_time": "10-12 months", "price_trend": "Stable", "best_selling_time": "Year-round", "selling_methods": "Fruit traders, local markets"},
     "rice": {"description": "🌾 Requires warm temperature and high humidity.", "irrigation": "Every 5-7 days", "harvest_time": "120-150 days", "price_trend": "Stable with seasonal spikes", "best_selling_time": "Post-monsoon (Oct-Dec)", "selling_methods": "Local markets, government procurement, online platforms"},
@@ -66,43 +49,44 @@ crop_details = {
 
 # ✅ Function to Predict Crop
 def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall):
-    input_data = np.array([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]])
-    return model.predict(input_data)[0]
+    feature_names = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']
+    input_data = pd.DataFrame([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]], columns=feature_names)
 
+    # ✅ Predict
+    predicted_crop = model.predict(input_data)[0]
+    predicted_crop_name = label_encoder.inverse_transform([predicted_crop])[0]
+
+    return predicted_crop_name
+
+# ✅ Function to Display Crop Info & Image
 def show_crop_info(crop_name):
-    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.png")
-
-
     col1, col2 = st.columns([1.5, 2.5])
+    
     with col1:
         st.markdown(f"<h3 style='color: green;'>🌿 {crop_name.capitalize()} Guide</h3>", unsafe_allow_html=True)
         details = crop_details.get(crop_name.lower(), {})
         if details:
             st.info(details["description"])
             st.markdown(f"**💧 Irrigation:** {details['irrigation']}")
-            st.markdown(f"**⏳ Harvest Time:** {details['harvest_time']}")
-            st.markdown(f"**📉 Market Price Trends:** {details['price_trend']}")
-            st.markdown(f"**🛒 Best Time to Sell:** {details['best_selling_time']}")
-            st.markdown(f"**📦 Selling Methods:** {details['selling_methods']}")
         else:
             st.warning("ℹ No detailed information available for this crop.")
+
+    # ✅ Debug image path
+    image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.png")
+    st.text(f"🔍 Checking Image Path: {image_path}")  # ✅ Print path for debugging
+
     with col2:
         if os.path.exists(image_path):
-            st.image(Image.open(image_path).resize((400, 300)), caption=f"🌿 Recommended Crop: {crop_name}")
+            st.image(Image.open(image_path), caption=f"🌿 Recommended Crop: {crop_name}")
+        else:
+            st.warning(f"❌ Image not found: {image_path}")
 
-# ✅ Function to Predict Crop with Strict Validation
-def predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall):
-    input_data = np.array([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]])
-
-    # ✅ Prevent Prediction If Any Input (Except pH) Is Zero
-    if np.any(input_data[:, :6] == 0):  # Checking first 6 parameters (excluding pH)
-        return "Invalid Input"
-
-    return model.predict(input_data)[0]
-
-# ✅ Update Main Function to Handle Invalid Inputs
+# ✅ Streamlit UI
 def main():
     st.markdown("<h2 style='text-align: center; color: #4CAF50;'>🌾 SMART CROP RECOMMENDATION 🌾</h2>", unsafe_allow_html=True)
+
+    # Debugging: Print working directory
+    st.text(f"📂 Current Working Directory: {os.getcwd()}")
 
     # Sidebar Inputs
     st.sidebar.markdown("<h2 style='color: #4CAF50;'>🌱 Enter Soil & Climate Conditions</h2>", unsafe_allow_html=True)
@@ -118,30 +102,9 @@ def main():
     # Predict Button
     if st.sidebar.button("🌿 Predict Crop"):
         prediction = predict_crop(nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall)
-        
-        # ✅ Show Error Message If Input Was Invalid
-        if prediction == "Invalid Input":
-            st.error("❌ Please enter valid values for all parameters before predicting.")
-        else:
-            st.success(f"🌱 Recommended Crop: **{prediction.capitalize()}**")
-            show_crop_info(prediction)
-# ✅ Function to Display Crop Info & Image
-def show_crop_info(crop_name):
-    col1, col2 = st.columns([1.5, 2.5])
-    with col1:
-        st.markdown(f"<h3 style='color: green;'>🌿 {crop_name.capitalize()} Guide</h3>", unsafe_allow_html=True)
-        details = crop_details.get(crop_name.lower(), {})
-        if details:
-            st.info(details["description"])
-            st.markdown(f"**💧 Irrigation:** {details['irrigation']}")
-        else:
-            st.warning("ℹ No detailed information available for this crop.")
-    with col2:
-        image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.png")
-        if os.path.exists(image_path):
-            st.image(Image.open(image_path).resize((400, 300)), caption=f"🌿 Recommended Crop: {crop_name}")
-        else:
-            st.warning("❌ No image available for this crop.")
+        st.success(f"🌱 Recommended Crop: **{prediction.capitalize()}**")
+        show_crop_info(prediction)
+
 # ✅ Run the App
 if __name__ == '__main__':
     main()
