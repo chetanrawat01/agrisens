@@ -9,7 +9,8 @@ from PIL import Image
 
 # ✅ Fix: Get absolute paths
 DATA_PATH = os.path.join(os.path.dirname(__file__), "Crop_recommendation.csv")
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "RF.pkl")
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "AgriSens\RF.pkl")
+ENCODER_PATH = os.path.join(os.path.dirname(__file__), "AgriSens\label_encoder.pkl")
 IMAGE_DIR = os.path.join(os.path.dirname(__file__), "crop_images")
 
 # ✅ Ensure the dataset exists
