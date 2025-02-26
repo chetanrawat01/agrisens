@@ -8,8 +8,8 @@ from PIL import Image
 # ✅ Define Paths
 BASE_DIR = os.path.dirname(__file__)  # Get the base directory
 IMAGE_DIR = os.path.join(BASE_DIR, "CROP-RECOMMENDATION", "crop_images")  # ✅ Updated path
-MODEL_PATH = os.path.join(BASE_DIR, "AgriSens\RF.pkl")
-ENCODER_PATH = os.path.join(BASE_DIR, "AgriSens\label_encoder.pkl")
+MODEL_PATH = os.path.join(BASE_DIR, "RF.pkl")
+ENCODER_PATH = os.path.join(BASE_DIR, "label_encoder.pkl")
 
 # ✅ Load Model & Label Encoder
 if os.path.exists(MODEL_PATH) and os.path.exists(ENCODER_PATH):
