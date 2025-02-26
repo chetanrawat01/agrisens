@@ -125,7 +125,23 @@ def main():
         else:
             st.success(f"🌱 Recommended Crop: **{prediction.capitalize()}**")
             show_crop_info(prediction)
-
+# ✅ Function to Display Crop Info & Image
+def show_crop_info(crop_name):
+    col1, col2 = st.columns([1.5, 2.5])
+    with col1:
+        st.markdown(f"<h3 style='color: green;'>🌿 {crop_name.capitalize()} Guide</h3>", unsafe_allow_html=True)
+        details = crop_details.get(crop_name.lower(), {})
+        if details:
+            st.info(details["description"])
+            st.markdown(f"**💧 Irrigation:** {details['irrigation']}")
+        else:
+            st.warning("ℹ No detailed information available for this crop.")
+    with col2:
+        image_path = os.path.join(IMAGE_DIR, f"{crop_name.lower()}.png")
+        if os.path.exists(image_path):
+            st.image(Image.open(image_path).resize((400, 300)), caption=f"🌿 Recommended Crop: {crop_name}")
+        else:
+            st.warning("❌ No image available for this crop.")
 # ✅ Run the App
 if __name__ == '__main__':
     main()
